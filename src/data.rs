@@ -47,7 +47,8 @@ impl Array {
                 for i in 0..self.data.len() {
                     s += (self.data[i] - self.mean()).powi(2);
                 }
-                self.var = Some((s /(self.data.len() as f32)));
+                s /= self.data.len() as f32;
+                self.var = Some( s );
                 self.stdev = Some( self.var.unwrap().sqrt() );
                 return self.var.unwrap();
             }
@@ -103,17 +104,19 @@ fn array_varience() {
 
     let input_data2: Vec<f32> = vec![ 1.0_f32,2.0,3.0,1.0,43.0 ];
     let mut data2 = Array::new( input_data2 );
-    assert!( data2.varience() == 341_f32 );
+    assert!( data2.varience() == 272.8_f32 );
 }
 #[test]
-#[ignore]
 fn array_stdev() {
-    let input_data: Vec<f32> = vec![ 1.0_f32,2.0,3.0,4.0,5.0,2.0,3.0,5.0,5.0 ];
+    let input_data: Vec<f32> = vec![ 1.0_f32,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0 ];
     let mut data = Array::new( input_data );
-    assert!( data.stdev() == 1.5_f32 );
+    assert!( data.stdev() == (14_f32).sqrt() );
+    let input_data2: Vec<f32> = vec![ 1_f32,2.0,3.0,4.0,5.0,6.0,7.0 ];
+    let mut data2 = Array::new( input_data2 );
+    assert!( data2.stdev() == 2_f32 );
 }
 pub fn stdev_test() {
     let input_data: Vec<f32> = vec![ 1.0_f32,2.0,3.0,4.0,5.0,2.0,3.0,5.0,5.0 ];
     let mut data = Array::new( input_data );
-    println!("stdev: {}", data.varience() );
+    println!("var: {}", data.varience() );
 }
