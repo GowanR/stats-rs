@@ -1,3 +1,4 @@
+#[derive(Debug, Clone)]
 pub struct Array {
     data: Vec<f32>,
     mean: Option<f32>,
@@ -63,14 +64,24 @@ impl Array {
         }
     }
     pub fn median(&mut self) -> f32 {
-        unimplemented!();
+        match self.median {
+            Some(x) => return x,
+            None => {
+                let mut sorted_data = self.data.clone();
+                sorted_data.sort_by(|a, b| a.partial_cmp(b).unwrap());
+                self.median = Some( sorted_data[sorted_data.len()/2] );
+                return self.median.unwrap();
+            },
+        }
     }
 }
 
 #[test]
 fn array_construction() {
     let input_data: Vec<f32> = vec![ 1.0_f32, 2.0, 3.0 ];
+    let cloned_data = input_data.clone();
     let data = Array::new( input_data );
+    assert!( data.data == cloned_data );
 }
 #[test]
 fn array_sum() {
@@ -92,9 +103,10 @@ fn array_mean() {
 
 }
 #[test]
-#[ignore]
 fn array_median() {
-    unimplemented!();
+    let input_data: Vec<f32> = vec![ 1.1231_f32,2.123,3.14,4.333,5.4545 ];
+    let mut data = Array::new( input_data );
+    assert!( data.median() == 3.14 );
 }
 #[test]
 fn array_varience() {
@@ -116,7 +128,7 @@ fn array_stdev() {
     assert!( data2.stdev() == 2_f32 );
 }
 pub fn stdev_test() {
-    let input_data: Vec<f32> = vec![ 1.0_f32,2.0,3.0,4.0,5.0,2.0,3.0,5.0,5.0 ];
+    let input_data: Vec<f32> = vec![ 1.0_f32,2.0,3.0,4.0,5.0 ];
     let mut data = Array::new( input_data );
-    println!("var: {}", data.varience() );
+    println!("data: {:?}\nMedian: {}", data.clone(), data.median() );
 }
