@@ -6,16 +6,16 @@ pub struct Line {
     y_int: f32,
 }
 impl Line {
-    fn get( &self, x: f32 ) -> f32 {
+    pub fn get( &self, x: f32 ) -> f32 {
         (self.slope * x) + self.y_int
     }
-    fn new( s: f32, y: f32 ) -> Line {
+    pub fn new( s: f32, y: f32 ) -> Line {
         Line {
             slope: s,
             y_int: y,
         }
     }
-    fn from( p1: Point, p2: Point ) -> Option<Line> {
+    pub fn from( p1: Point, p2: Point ) -> Option<Line> {
         if p1.x == p2.x {
             return None;
         }
@@ -26,16 +26,22 @@ impl Line {
             y_int: b,
         } );
     }
-    fn intersects( &self, p1: Point ) -> bool {
+    pub fn intersects( &self, p1: Point ) -> bool {
         self.get( p1.x ) == p1.y
     }
-    fn intersection( &self, p: Line ) -> Option<Point> {
+    pub fn intersection( &self, p: Line ) -> Option<Point> {
         if self.slope == p.slope {
             return None;
         }
         let x = (self.y_int - p.y_int) / (p.slope - self.slope);
         let y = self.get(x);
         return Some( Point{ x: x, y: y } );
+    }
+}
+use std::fmt;
+impl fmt::Debug for Line {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "y = {}x + {}", self.slope, self.y_int)
     }
 }
 #[test]

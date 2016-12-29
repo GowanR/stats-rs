@@ -1,11 +1,19 @@
+use std::ops::Index;
+
 #[derive(Debug, Clone)]
 pub struct Array {
-    data: Vec<f32>,
+    pub data: Vec<f32>,
     mean: Option<f32>,
     sum: Option<f32>,
     median: Option<f32>,
     stdev: Option<f32>,
     var: Option<f32>
+}
+impl Index<usize> for Array {
+    type Output = f32;
+    fn index(&self, i: usize) -> &f32 {
+        &self.data[i]
+    }
 }
 impl Array {
     pub fn new( d: Vec<f32> ) -> Array {
@@ -17,6 +25,9 @@ impl Array {
             sum: None,
             var: None,
         }
+    }
+    pub fn len(&self) -> usize {
+        return self.data.len();
     }
     pub fn sum(&mut self) -> f32 {
         match self.sum {
@@ -127,8 +138,15 @@ fn array_stdev() {
     let mut data2 = Array::new( input_data2 );
     assert!( data2.stdev() == 2_f32 );
 }
-pub fn stdev_test() {
-    let input_data: Vec<f32> = vec![ 1.0_f32,2.0,3.0,4.0,5.0 ];
-    let mut data = Array::new( input_data );
-    println!("data: {:?}\nMedian: {}", data.clone(), data.median() );
+#[test]
+fn array_indexing() {
+    let array = Array::new( vec![ 1f32, 2.0, 3.0 ] );
+    assert!( array[0] == 1f32 );
+    assert!( array[1] == 2f32 );
+    assert!( array[2] == 3f32 );
+}
+#[test]
+fn array_len() {
+    let array = Array::new( vec![ 1f32, 2.0, 3.0 ] );
+    assert!( array.len() == 3 );
 }
