@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 use point::Point;
 
+#[derive(Clone,Copy)]
 pub struct Line {
     pub slope: f32,
     pub y_int: f32,

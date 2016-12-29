@@ -8,7 +8,7 @@ pub struct Regression {
     r_value: Option<f32>,
 }
 impl Regression {
-    fn new( a1: Array, a2: Array ) -> Regression {
+    pub fn new( a1: Array, a2: Array ) -> Regression {
         assert!( a1.data.len() == a2.data.len() );
         Regression {
             x: a1,
@@ -17,10 +17,10 @@ impl Regression {
             r_value: None,
         }
     }
-    fn from( v1: Vec<f32>, v2: Vec<f32> ) -> Regression {
+    pub fn from( v1: Vec<f32>, v2: Vec<f32> ) -> Regression {
         Regression::new( Array::new(v1), Array::new(v2) )
     }
-    fn r_value( &mut self ) -> f32 {
+    pub fn r_value( &mut self ) -> f32 {
         assert!( self.x.len() == self.y.len() );
         match self.r_value {
             Some( r ) => return r,
@@ -35,10 +35,16 @@ impl Regression {
             },
         }
     }
-    fn least_squares(&mut self) -> Option<Line> {
-        let b = self.r_value() * ( self.y.stdev() / self.x.stdev() );
-        let m = self.y.mean() - ( b * self.x.mean() );
-        return Some( Line::new( m, b ) ) ;
+    pub fn least_squares(&mut self) -> Line {
+        match self.lsrl {
+            Some( line ) => return line,
+            None => {
+                let b = self.r_value() * ( self.y.stdev() / self.x.stdev() );
+                let m = self.y.mean() - ( b * self.x.mean() );
+                self.lsrl = Some( Line::new( m, b ) );
+                return self.lsrl.unwrap();
+            }
+        }
     }
 }
 #[test]
@@ -61,7 +67,7 @@ fn regression_r_value() {
 #[test]
 fn regression_least_squares() {
     let mut reg = Regression::from( vec![1.0f32,2.0,3.0,4.0], vec![2.3, 3.55, 4.56, 3.45] );
-    let line = reg.least_squares().unwrap();
+    let line = reg.least_squares();
     assert!( line.slope ==  2.35f32 );
     assert!( line.y_int == 0.44600004f32 );
 }
