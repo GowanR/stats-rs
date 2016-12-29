@@ -18,11 +18,10 @@ impl Regression {
         }
     }
     fn from( v1: Vec<f32>, v2: Vec<f32> ) -> Regression {
-        unimplemented!();
+        Regression::new( Array::new(v1), Array::new(v2) )
     }
     fn r_value( &mut self ) -> f32 {
-        unimplemented!();
-        assert!( self.x.data.len() == self.y.data.len() );
+        assert!( self.x.len() == self.y.len() );
         match self.r_value {
             Some( r ) => return r,
             None => {
@@ -30,10 +29,16 @@ impl Regression {
                 for i in 0..self.x.len() {
                     sum += ( self.x[i] - self.x.mean() ) * ( self.y[i] - self.y.mean() );
                 }
-                self.r_value = Some( sum / ( self.x.stdev() * self.y.stdev() ) );
+                let coef_n = 1f32 / self.x.len() as f32;
+                self.r_value = Some( coef_n * (sum / ( self.x.stdev() * self.y.stdev() ) ) );
                 return self.r_value.unwrap();
             },
         }
+    }
+    fn least_squares(&mut self) -> Option<Line> {
+        let b = self.r_value() * ( self.y.stdev() / self.x.stdev() );
+        let m = self.y.mean() - ( b * self.x.mean() );
+        return Some( Line::new( m, b ) ) ;
     }
 }
 #[test]
@@ -50,10 +55,13 @@ fn regression_r_value() {
     let a2 = Array::new( vec![ 1_f32, 2.0, 3.0, 4.0 ] );
     let mut reg = Regression::new( a1, a2 );
     assert!( reg.r_value() == 1_f32 );
+    let mut reg2 = Regression::from( vec![ 1.0f32,2.0,3.0,4.0,65.0,23.0 ], vec![ 23.3f32,12.2,13.4,12.0,23.44,14.3 ] );
+    assert!( reg2.r_value() == 0.5504537f32 );
 }
-pub fn test() {
-    let a1 = Array::new( vec![ 1_f32, 2.0, 3.0, 4.0 ] );
-    let a2 = Array::new( vec![ 1_f32, 2.0, 3.0, 4.0 ] );
-    let mut reg = Regression::new( a1, a2 );
-    println!( "r value: {}", reg.r_value() );
+#[test]
+fn regression_least_squares() {
+    let mut reg = Regression::from( vec![1.0f32,2.0,3.0,4.0], vec![2.3, 3.55, 4.56, 3.45] );
+    let line = reg.least_squares().unwrap();
+    assert!( line.slope ==  2.35f32 );
+    assert!( line.y_int == 0.44600004f32 );
 }

@@ -2,8 +2,8 @@
 use point::Point;
 
 pub struct Line {
-    slope: f32,
-    y_int: f32,
+    pub slope: f32,
+    pub y_int: f32,
 }
 impl Line {
     pub fn get( &self, x: f32 ) -> f32 {

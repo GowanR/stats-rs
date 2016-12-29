@@ -1,6 +1,9 @@
 use std::ops::Index;
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::fmt::Result;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Array {
     pub data: Vec<f32>,
     mean: Option<f32>,
@@ -13,6 +16,11 @@ impl Index<usize> for Array {
     type Output = f32;
     fn index(&self, i: usize) -> &f32 {
         &self.data[i]
+    }
+}
+impl Debug for Array {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "{:?}", self.data )
     }
 }
 impl Array {
@@ -84,6 +92,14 @@ impl Array {
                 return self.median.unwrap();
             },
         }
+    }
+    pub fn reset(&mut self) {
+        self.data = vec![];
+        self.mean = None;
+        self.sum = None;
+        self.median = None;
+        self.stdev = None;
+        self.var = None;
     }
 }
 
