@@ -1,6 +1,5 @@
 use data::Array;
 use line::Line;
-#[allow(dead_code)]
 pub struct Regression {
     pub x: Array,
     pub y: Array,
@@ -45,6 +44,15 @@ impl Regression {
                 return self.lsrl.unwrap();
             }
         }
+    }
+    // TODO: write unit test for residuals
+    pub fn least_squares_residuals(&mut self) -> Array {
+        let line = self.least_squares();
+        let mut v: Vec<f32> = vec![];
+        for i in 0..self.x.len() {
+            v.push( self.y[i] - line.get( self.x[i] ) );
+        }
+        Array::new( v )
     }
 }
 #[test]
